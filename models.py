@@ -57,7 +57,3 @@ class FriendList:
 
     def friends(self):
         return list(self._friend_dict.values())
-
-    def sorted_descending_msg_count(self):
-        sorted_list = [(friend.name, len(friend.messages)) for friend in self.friends()]
-        return sorted(sorted_list, key=lambda x: (-x[1], x[0]))
