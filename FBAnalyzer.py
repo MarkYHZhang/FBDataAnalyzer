@@ -23,7 +23,7 @@ def get_root_path_from_input():
             )
 
 
-class FBAnalyzer:
+class FBDeserializer:
 
     def __read_messages(self, inbox_path):
         messages = []
@@ -55,4 +55,5 @@ class FBAnalyzer:
 
 
 if __name__ == '__main__':
-    FBAnalyzer()
+    fb_data = FBDeserializer()
+    import ipdb; ipdb.set_trace()
