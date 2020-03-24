@@ -26,13 +26,13 @@ class FBDeserializer:
             if not msg_inbox.is_dir():
                 continue
             formatted_name = msg_inbox.name.split("_")[0].lower()
-            if self.friend_list.contains(formatted_name):
-                friend = self.friend_list.get(formatted_name)
+            if self.friends.contains(formatted_name):
+                friend = self.friends.get(formatted_name)
                 friend.messages = self.__read_messages(msg_inbox.path)
-        self.user = self.friend_list.get(self.__name_inference_counter.most_common(1)[0][0].lower().replace(" ", ""))
+        self.sender_name = self.__name_inference_counter.most_common(1)[0][0].lower().replace(" ", "")
 
     def __init__(self, root_path):
         self.root_path = root_path
-        self.friend_list = FriendList(utils.read_json(paths.get_friends_json_path(self.root_path)))
+        self.friends = FriendList(utils.read_json(paths.get_friends_json_path(self.root_path)))
         self._populate_messages()
 

@@ -1,5 +1,7 @@
-from FBDeserializer import FBDeserializer
+from collections import defaultdict
 
+from FBDeserializer import FBDeserializer
+from models import Friend
 
 class FBAnalyzer:
 
@@ -12,6 +14,6 @@ class FBAnalyzer:
             raise Exception("Must provide either 'fb_data' a FBDeserializer object or 'root_path' str!")
 
     def sorted_descending_msg_count(self):
-        sorted_list = [(friend.name, len(friend.messages)) for friend in self.fb_data.friend_list.friends()]
+        sorted_list = [(friend.name, len(friend.messages)) for friend in self.fb_data.friends.friends()]
         return sorted(sorted_list, key=lambda x: (-x[1], x[0]))
 
