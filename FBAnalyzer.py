@@ -1,7 +1,6 @@
-from collections import defaultdict
+from collections import Counter
 
 from FBDeserializer import FBDeserializer
-from models import Friend
 
 class FBAnalyzer:
 
@@ -17,3 +16,19 @@ class FBAnalyzer:
         sorted_list = [(friend.name, len(friend.messages)) for friend in self.fb_data.friends.friends()]
         return sorted(sorted_list, key=lambda x: (-x[1], x[0]))
 
+    def get_msg_freq_minutes_since_midnight(self, msg_sent=True):
+        counter = Counter()
+        for friend in self.fb_data.friends.friends():
+            messages = friend.messages
+            for m in messages:
+                if msg_sent and m.sender_name == self.fb_data.sender_name or not msg_sent and m.sender_name != self.fb_data.sender_name:
+                    d = m.timestamp_utc
+                    from dateutil import tz
+                    from_zone = tz.gettz('UTC')
+                    to_zone = tz.gettz('America/New_York')
+                    utc = d.replace(tzinfo=from_zone)
+                    easternTime = utc.astimezone(to_zone)
+                    minutes_since_midnight = round((easternTime - easternTime.replace(hour=0, minute=0, second=0,
+                                                                                      microsecond=0)).total_seconds()/60/15)
+                    counter[minutes_since_midnight] += 1
+        return sorted(counter.items())
