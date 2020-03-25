@@ -1,5 +1,5 @@
 # FBDataAnalyzer
-A tool that enables you to easier programmatically (or not) interact with your downloaded Facebook data
+A tool that enables you to programmatically (or not, web interface is in the plan) interact with your downloaded Facebook data
 
 ## Sample use cases
 ![Hours in day Vs Frequency of messages](https://raw.githubusercontent.com/MarkYHZhang/FBDataAnalyzer/master/docs/images/filename.png)
