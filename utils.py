@@ -1,7 +1,7 @@
 import os
 import logging
 import json
-
+import paths
 
 def is_ascii(s: str):
     return all(ord(c) < 128 for c in s)
@@ -27,6 +27,22 @@ def get_path_from_input(prompt: str):
             first = False
         path = input(prompt)
     return path
+
+
+def get_root_path_from_input():
+    while True:
+        path = get_path_from_input("Input path to FB data folder: ")
+        requirements = [
+            is_valid_path(paths.get_friends_json_path(path)),
+            is_nonempty_dir(paths.get_message_inbox_path(path))
+        ]
+        if all(requirements):
+            return path
+        else:
+            logging.warning(
+                "Provided path '" + path + "' does not contain "
+                                           "required 'friends/friends.json' and/or a nonempty messages/inbox"
+            )
 
 
 def read_json(path):

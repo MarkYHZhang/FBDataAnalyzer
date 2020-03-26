@@ -44,7 +44,6 @@ class FBDeserializer:
             formatted_name: str = printable_name.replace(" ", "").lower()
             if formatted_name in name_counter:
                 formatted_name += "_" + str(name_counter[formatted_name])
-                print(formatted_name)
             name_counter[formatted_name] += 1
 
             messages, oldest_message = self.__read_messages(inbox.path)

@@ -76,7 +76,7 @@ class FriendMetric:
 
     def __process_msgs(self):
         for msg in self.friend.messages:
-            if msg.sender_name == self.friend.id:
+            if msg.sender_name == self.friend.name:
                 self.__received_msg_cnt += 1
                 self.__received_char_cnt += len(msg.content)
             elif self.sender_name:
