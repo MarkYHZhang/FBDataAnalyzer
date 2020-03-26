@@ -1,6 +1,5 @@
 import utils
 from typing import Dict, List
-from collections import defaultdict
 import datetime
 
 
@@ -28,14 +27,19 @@ class Message:
         if photos:
             self.photos = [Photo(**photo) for photo in photos]
 
+    def __str__(self):
+        return str(self.sender_name + ":::" + self.content)
+
 
 class Friend:
 
-    def __init__(self, name: str, timestamp: int, *args, **kwargs):
-        self.printable_name: str = name
-        self.name: str = name.replace(" ", "").lower()
+    def __init__(self, name: str, timestamp: int, printable_name: str = "", messages: List[Message] = None, *args, **kwargs):
+        self.printable_name: str = printable_name
+        self.name: str = name
         self.friend_since: int = timestamp
-        self.messages: List[Message] = []
+        if not messages:
+            messages = []
+        self.messages: List[Message] = messages
 
 
 class FriendMetric:
@@ -72,7 +76,7 @@ class FriendMetric:
 
     def __process_msgs(self):
         for msg in self.friend.messages:
-            if msg.sender_name == self.friend.name:
+            if msg.sender_name == self.friend.id:
                 self.__received_msg_cnt += 1
                 self.__received_char_cnt += len(msg.content)
             elif self.sender_name:
@@ -90,18 +94,12 @@ class FriendMetric:
         })
 
 
-
-
-
 class FriendList:
 
-    def __init__(self, friends_json: Dict):
+    def __init__(self, friends: List[Friend]):
         self._friend_dict = {}
-        for json_obj in friends_json["friends"]:
-            friend = Friend(**json_obj)
-            if not utils.is_ascii(friend.name):
-                continue
-            self._friend_dict[friend.name] = friend
+        for f in friends:
+            self._friend_dict[f.name] = f
 
     def contains(self, name):
         return name in self._friend_dict
