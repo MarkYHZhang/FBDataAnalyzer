@@ -1,6 +1,8 @@
 from collections import Counter
 
 from FBDeserializer import FBDeserializer
+from models import Friend
+
 import pickle
 
 
@@ -28,22 +30,30 @@ class FBAnalyzer:
         sorted_list = [(friend.name, len(friend.messages)) for friend in self.fb_data.friends.friends()]
         return sorted(sorted_list, key=lambda x: (-x[1], x[0]))
 
-    def get_msg_freq_minutes_since_midnight(self, msg_sent=True):
-        counter = Counter()
+    def __get_msg_freq_minutes_since_midnight(self, friend: Friend, msg_sent=True):
+        counter = Counter({k: 0 for k in range(1440)})
+        messages = friend.messages
+        for m in messages:
+            if msg_sent and m.sender_name == self.fb_data.sender_name or not msg_sent and m.sender_name != self.fb_data.sender_name:
+                d = m.timestamp_utc
+                from dateutil import tz
+                from_zone = tz.gettz('UTC')
+                to_zone = tz.gettz('America/New_York')
+                utc = d.replace(tzinfo=from_zone)
+                easternTime = utc.astimezone(to_zone)
+                minutes_since_midnight = round((easternTime - easternTime.replace(hour=0, minute=0, second=0,
+                                                                                  microsecond=0)).total_seconds()/60)
+                counter[minutes_since_midnight] += 1
+        return counter
+
+    def get_msg_freq_minutes_since_midnight(self, friend: Friend, msg_sent=True):
+        return sorted(self.__get_msg_freq_minutes_since_midnight(friend=friend, msg_sent=msg_sent).items())
+
+    def get_all_msg_freq_minutes_since_midnight(self, msg_sent=True):
+        counter = Counter({k: 0 for k in range(1440)})
         for friend in self.fb_data.friends.friends():
-            messages = friend.messages
-            for m in messages:
-                if msg_sent and m.sender_name == self.fb_data.sender_name or not msg_sent and m.sender_name != self.fb_data.sender_name:
-                    d = m.timestamp_utc
-                    from dateutil import tz
-                    from_zone = tz.gettz('UTC')
-                    to_zone = tz.gettz('America/New_York')
-                    utc = d.replace(tzinfo=from_zone)
-                    easternTime = utc.astimezone(to_zone)
-                    from datetime import datetime, timedelta
-                    if datetime(year=2019, month=5, day=2, tzinfo=tz.UTC) <= easternTime <= datetime(year=2019, month=8, day=25, tzinfo=tz.UTC):
-                        easternTime -= timedelta(hours=3)
-                    minutes_since_midnight = round((easternTime - easternTime.replace(hour=0, minute=0, second=0,
-                                                                                      microsecond=0)).total_seconds()/60/15)
-                    counter[minutes_since_midnight] += 1
+            counter += self.__get_msg_freq_minutes_since_midnight(friend=friend, msg_sent=msg_sent)
+        for i in range(1440):
+            if i not in counter:
+                counter[i] = 0
         return sorted(counter.items())

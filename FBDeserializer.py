@@ -59,6 +59,12 @@ class FBDeserializer:
         self.sender_name = self.__name_inference_counter.most_common(1)[0][0].lower().replace(" ", "")
         return friends
 
+    def __construct_messages_dataframe(self):
+        # TODO: dataframe conversion
+        # friend, content, direction, timestamp
+        #  name ,        , sent/received, int
+        pass
+
     def __init__(self, root_path):
         self.root_path = root_path
         self.friends = FriendList(self.__construct_friend_list())
