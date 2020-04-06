@@ -1,6 +1,17 @@
 # FBDataAnalyzer
 A tool that enables you to programmatically (or not, web interface is in the plan) interact with your downloaded Facebook data
 
+## Notable Deserializer Features
+* Fully deserialized `Message` model grouped based on `Friend` model.
+    * Handles the following message formats:
+        * `TextMessage` model
+        * `Sticker` model
+        * `Photos` model
+    * Timestamp in milliseconds and UTC `datetime` object
+    * **NEW** conversion to `pandas.DataFrame` object
+ * `FriendMetric` model that offers quantitative metrics of a `Friend` model
+
+
 ## Sample use cases
 ![Hours in day Vs Frequency of messages](https://raw.githubusercontent.com/MarkYHZhang/FBDataAnalyzer/master/docs/images/msg_freq_histogram.png)
 
