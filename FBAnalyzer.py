@@ -2,6 +2,7 @@ from collections import Counter
 
 from FBDeserializer import FBDeserializer
 from models import Friend
+import utils
 
 import pickle
 
@@ -35,13 +36,8 @@ class FBAnalyzer:
         messages = friend.messages
         for m in messages:
             if msg_sent and m.sender_name == self.fb_data.sender_name or not msg_sent and m.sender_name != self.fb_data.sender_name:
-                d = m.timestamp_utc
-                from dateutil import tz
-                from_zone = tz.gettz('UTC')
-                to_zone = tz.gettz('America/New_York')
-                utc = d.replace(tzinfo=from_zone)
-                easternTime = utc.astimezone(to_zone)
-                minutes_since_midnight = round((easternTime - easternTime.replace(hour=0, minute=0, second=0,
+                eastern_datetime = utils.utc_to_eastern_datetime(m.timestamp_utc)
+                minutes_since_midnight = round((eastern_datetime - eastern_datetime.replace(hour=0, minute=0, second=0,
                                                                                   microsecond=0)).total_seconds()/60)
                 counter[minutes_since_midnight] += 1
         return counter

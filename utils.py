@@ -2,6 +2,9 @@ import os
 import logging
 import json
 import paths
+import datetime
+from dateutil import tz
+
 
 def is_ascii(s: str):
     return all(ord(c) < 128 for c in s)
@@ -50,3 +53,15 @@ def read_json(path):
         return None
     with open(path) as f:
         return json.load(f)
+
+
+def timestamp_ms_to_utc_date(timestamp_ms: int):
+    return datetime.datetime.utcfromtimestamp(timestamp_ms//1000).replace(microsecond=timestamp_ms%1000*1000)
+
+
+def utc_to_eastern_datetime(utc_datetime: datetime.datetime):
+    from_zone = tz.gettz('UTC')
+    to_zone = tz.gettz('America/New_York')
+    utc = utc_datetime.replace(tzinfo=from_zone)
+    eastern_datetime = utc.astimezone(to_zone)
+    return eastern_datetime

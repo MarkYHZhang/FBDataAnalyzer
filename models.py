@@ -1,18 +1,41 @@
+from typing import List
 import utils
-from typing import Dict, List
-import datetime
+
+from cached_property import cached_property
+import pandas as pd
+
+
+class TextMessage:
+
+    def __init__(self, content: str = ""):
+        self.content = content
+
+    def __str__(self):
+        return self.content
 
 
 class Sticker:
 
     def __init__(self, uri: str, *args, **kwargs):
-        self.uri = uri
+        self.content = uri
+
+    def __str__(self):
+        return self.content
 
 
-class Photo:
+class _Photo:
 
     def __init__(self, uri: str, *args, **kwargs):
-        self.uri = uri
+        self.content = uri
+
+    def __str__(self):
+        return self.content
+
+
+class Photos:
+
+    def __init__(self, photos: List[_Photo]):
+        self.content = [p.content for p in photos]
 
 
 class Message:
@@ -20,15 +43,27 @@ class Message:
     def __init__(self, sender_name: str, timestamp_ms: int, content: str = "", photos=None, sticker=None, *args, **kwargs):
         self.printable_sender_name = sender_name
         self.sender_name = sender_name.lower().replace(" ", "")
-        self.timestamp_utc = datetime.datetime.utcfromtimestamp(timestamp_ms//1000).replace(microsecond=timestamp_ms%1000*1000)
-        self.content: str = content
+        self.timestamp_ms = timestamp_ms
+        self.timestamp_utc = utils.timestamp_ms_to_utc_date(timestamp_ms)
+        if content:
+            self._text = TextMessage(content=content)
         if sticker:
-            self.sticker = Sticker(**sticker)
+            self._sticker = Sticker(**sticker)
         if photos:
-            self.photos = [Photo(**photo) for photo in photos]
+            self._photos = [_Photo(**photo) for photo in photos]
+
+    @property
+    def content(self):
+        if hasattr(self, '_text'):
+            return self._text.content
+        if hasattr(self, '_sticker'):
+            return self._sticker
+        if hasattr(self, '_photos'):
+            return self._photos
+        return
 
     def __str__(self):
-        return str(self.sender_name + ":::" + self.content)
+        return str(self.sender_name + ":::" + str(self.content))
 
 
 class Friend:
@@ -40,6 +75,24 @@ class Friend:
         if not messages:
             messages = []
         self.messages: List[Message] = messages
+
+    @cached_property
+    def messages_dataframe(self):
+        msg_dict = {
+            "friend": [],
+            "content": [],
+            "action": [],
+            "timestamp": [],
+        }
+        for m in self.messages:
+            msg_dict["friend"].append(self.name)
+            msg_dict["content"].append(m.content)
+            if m.sender_name == self.name:
+                msg_dict["action"].append("received")
+            else:
+                msg_dict["action"].append("sent")
+            msg_dict["timestamp"].append(m.timestamp_ms)
+        return pd.DataFrame(msg_dict)
 
 
 class FriendMetric:
@@ -77,11 +130,13 @@ class FriendMetric:
     def __process_msgs(self):
         for msg in self.friend.messages:
             if msg.sender_name == self.friend.name:
-                self.__received_msg_cnt += 1
-                self.__received_char_cnt += len(msg.content)
+                if isinstance(msg.content, TextMessage):
+                    self.__received_msg_cnt += 1
+                    self.__received_char_cnt += len(str(msg.content))
             elif self.sender_name:
-                self.__sent_msg_cnt += 1
-                self.__sent_char_cnt += len(msg.content)
+                if isinstance(msg.content, TextMessage):
+                    self.__sent_msg_cnt += 1
+                    self.__sent_char_cnt += len(str(msg.content))
 
     def __init__(self, sender_name: str,  friend: Friend):
         self.sender_name: str = sender_name
@@ -112,3 +167,8 @@ class FriendList:
 
     def friends(self):
         return list(self._friend_dict.values())
+
+    @cached_property
+    def get_combined_messages_dataframe(self):
+        msg_dfs = [f.messages_dataframe for f in self.friends()]
+        return pd.concat(msg_dfs)
