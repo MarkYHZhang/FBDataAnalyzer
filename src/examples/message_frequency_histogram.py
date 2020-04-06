@@ -1,5 +1,5 @@
-from FBAnalyzer import FBAnalyzer
-from utils import get_root_path_from_input
+from src.FBAnalyzer import FBAnalyzer
+from src.utils import get_root_path_from_input
 
 import matplotlib.pyplot as plt
 

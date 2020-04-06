@@ -13,7 +13,7 @@ Directly, from the graph you can tell:
 ### Code
 ```python
 # ---------------------------[ FBDataAnalyzer Code ]------------------------------
-from FBAnalyzer import FBAnalyzer
+from src.FBAnalyzer import FBAnalyzer
 fb_analyzer = FBAnalyzer(root_path="{PATH_TO_FB_DATA}")
 msg_freq = fb_analyzer.get_msg_freq_minutes_since_midnight(msg_sent=True)
 receive_msg_freq = fb_analyzer.get_msg_freq_minutes_since_midnight(msg_sent=False)

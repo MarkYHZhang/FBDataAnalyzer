@@ -1,8 +1,8 @@
 from collections import Counter
 
-from FBDeserializer import FBDeserializer
-from models import Friend
-import utils
+from src.FBDeserializer import FBDeserializer
+from src.models import Friend
+from src import utils
 
 import pickle
 

@@ -1,7 +1,7 @@
 import os
 import logging
 import json
-import paths
+from src import paths
 import datetime
 from dateutil import tz
 

@@ -1,5 +1,5 @@
 from typing import List
-import utils
+from src import utils
 
 from cached_property import cached_property
 import pandas as pd

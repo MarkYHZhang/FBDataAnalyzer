@@ -1,10 +1,9 @@
-import utils
 import os
 from collections import Counter
 from typing import List
 
-from models import FriendList, Message, Friend
-import paths
+from src.models import FriendList, Message, Friend
+from src import paths, utils
 
 
 class FBDeserializer:
