@@ -2,7 +2,7 @@ import os
 from collections import Counter
 from typing import List
 
-from src.models import FriendList, Message, Friend
+from models import FriendList, Message, Friend
 from src import paths, utils
 
 

@@ -1,6 +1,6 @@
-from src.FBAnalyzer import FBAnalyzer
-from src.utils import get_root_path_from_input
-from src.models import FriendMetric
+from FBAnalyzer import FBAnalyzer
+from utils import get_root_path_from_input
+from models import FriendMetric
 
 if __name__ == '__main__':
     fb_analyzer = FBAnalyzer(root_path=get_root_path_from_input())

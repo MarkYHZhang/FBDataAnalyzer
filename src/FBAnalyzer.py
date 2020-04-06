@@ -1,7 +1,7 @@
 from collections import Counter
 
-from src.FBDeserializer import FBDeserializer
-from src.models import Friend
+from FBDeserializer import FBDeserializer
+from models import Friend
 from src import utils
 
 import pickle
