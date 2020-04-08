@@ -8,7 +8,7 @@ import pandas as pd
 class TextMessage:
 
     def __init__(self, content: str = ""):
-        self.content = content
+        self.content = content.encode("ascii", "ignore").decode("utf-8")
 
     def __str__(self):
         return self.content

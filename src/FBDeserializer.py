@@ -38,9 +38,13 @@ class FBDeserializer:
                 continue
 
             printable_name: str = msg_one_json["title"].strip()
+            formatted_name: str = printable_name.replace(" ", "").lower()
+
+            # to only load messages from people that you are friend with
+            if formatted_name not in self._friend_names:
+                continue
 
             # to deal with duplicate names (both first and last)
-            formatted_name: str = printable_name.replace(" ", "").lower()
             if formatted_name in name_counter:
                 formatted_name += "_" + str(name_counter[formatted_name])
             name_counter[formatted_name] += 1
@@ -58,6 +62,11 @@ class FBDeserializer:
         self.sender_name = self.__name_inference_counter.most_common(1)[0][0].lower().replace(" ", "")
         return friends
 
+    def __load_friend_names(self):
+        names_json = utils.read_json(os.path.join(self.root_path, "friends", "friends.json"))["friends"]
+        return ["".join(list(filter(str.isalnum, friend_name["name"]))).lower() for friend_name in names_json]
+
     def __init__(self, root_path):
         self.root_path = root_path
+        self._friend_names = self.__load_friend_names()
         self.friends = FriendList(self.__construct_friend_list())
